@@ -1,0 +1,4 @@
+INFO:    Access Token Verified!
+INFO:    Token stored in /gpfs/helios/home/joshua1/.singularity/remote.yaml
+FATAL:   While performing build: build image size <= 0
+FATAL:   could not open image /gpfs/helios/home/joshua1/code/ut-ml-t18-lidar/selfsupervised_flow/slim.sif: failed to retrieve path for /gpfs/helios/home/joshua1/code/ut-ml-t18-lidar/selfsupervised_flow/slim.sif: lstat /gpfs/helios/home/joshua1/code/ut-ml-t18-lidar/selfsupervised_flow/slim.sif: no such file or directory

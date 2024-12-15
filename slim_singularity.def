@@ -1,0 +1,100 @@
+Bootstrap: docker
+From: ubuntu:18.04
+
+%labels
+    Author JoshuaHamiltonBrown
+    Version v1.0
+
+%files
+    . /opt/slim-scene-flow
+
+%environment
+    # Set environment variables
+    export PATH=/usr/local/cuda-10.2/bin:$PATH
+    export LD_LIBRARY_PATH=/usr/local/cuda-10.2/lib64:$LD_LIBRARY_PATH
+    export PYTHONPATH=/opt/slim-scene-flow:$PYTHONPATH
+
+%post
+
+    # Install Python 3.6 and pip
+    apt-get update && apt-get install -y --no-install-recommends \
+        python3.6 \
+        python3.6-dev \
+        python3-pip \
+        && rm -rf /var/lib/apt/lists/*
+    # Update and install essential packages
+    apt-get update && apt-get install -y --no-install-recommends \
+        build-essential \
+        wget \
+        curl \
+        git \
+        ca-certificates \
+        libglib2.0-0 \
+        libsm6 \
+        libxext6 \
+        libxrender-dev \
+        && rm -rf /var/lib/apt/lists/*
+
+    # Create symlinks for python and pip
+    ln -s /usr/bin/python3.6 /usr/local/bin/python
+    ln -s /usr/bin/pip3 /usr/local/bin/pip
+
+    # Install CUDA 10.2
+    # Download CUDA 10.2 base installer for Ubuntu 18.04
+    CUDA_VERSION=10.2.89
+    CUDA_PKG=cuda-repo-ubuntu1804-10-2-local_${CUDA_VERSION}-440.33.01-1_amd64.deb
+    wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-ubuntu1804.pin
+    mv cuda-ubuntu1804.pin /etc/apt/preferences.d/cuda-repository-pin-600
+    wget --user-agent="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:118.0) Gecko/20100101 Firefox/118.0" \
+        https://developer.download.nvidia.com/compute/cuda/10.2/Prod/local_installers/${CUDA_PKG}
+    dpkg -i ${CUDA_PKG}
+    apt-key add /var/cuda-repo-ubuntu1804-10-2-local/7fa2af80.pub
+    apt-get update && apt-get install -y --no-install-recommends \
+        cuda \
+        && rm -rf /var/lib/apt/lists/* && rm -f ${CUDA_PKG}
+
+    # Set environment variables for CUDA
+    echo 'export PATH=/usr/local/cuda-10.2/bin:$PATH' >> /etc/profile.d/cuda.sh
+    echo 'export LD_LIBRARY_PATH=/usr/local/cuda-10.2/lib64:$LD_LIBRARY_PATH' >> /etc/profile.d/cuda.sh
+    chmod +x /etc/profile.d/cuda.sh
+
+    # Install cuDNN 7.6.5 for CUDA 10.2
+    # Download cuDNN tar file (adjust the link to your specific version and download path)
+    CUDNN_VERSION=7.6.5.32
+    wget https://developer.nvidia.com/compute/machine-learning/cudnn/secure/7.6.5.32/Production/10.2_20191118/cudnn-10.2-linux-ppc64le-v7.6.5.32.tgz
+    tar -xzvf cudnn-10.2-linux-ppc64le-v7.6.5.32.tgz
+    cp cuda/include/cudnn*.h /usr/local/cuda-10.2/include/
+    cp -P cuda/lib64/libcudnn* /usr/local/cuda-10.2/lib64/
+    chmod a+r /usr/local/cuda-10.2/include/cudnn*.h /usr/local/cuda-10.2/lib64/libcudnn*
+    rm -rf cuda cudnn-10.2-linux-ppc64le-v7.6.5.32.tgz
+
+    # Install Python dependencies
+    pip install --upgrade pip setuptools
+    pip install numpy scipy cython
+    pip install open3d pandas scikit-learn matplotlib tqdm nuscenes-devkit
+
+    # Install pptk (legacy package)
+    # Install necessary build dependencies
+    apt-get update && apt-get install -y --no-install-recommends \
+        libgl1-mesa-dev \
+        libglu1-mesa-dev \
+        freeglut3-dev \
+        libxi-dev \
+        libxmu-dev \
+        libglew-dev \
+        libopenblas-dev \
+        swig \
+        && rm -rf /var/lib/apt/lists/*
+
+    pip install pptk
+
+    cd /opt/slim-scene-flow
+
+    python3 -m venv .venv --prompt usfl && \
+    source .venv/bin/activate && \
+    pip3 install -U setuptools pip && \
+    pip3 install -r requirements.txt && \
+    bash scripts/build_all.bash && \
+    source scripts/set_env_variables.bash && \
+    python -m unsup_flow/cli.py --prod
+

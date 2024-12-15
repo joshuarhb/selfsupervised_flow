@@ -1,0 +1,5 @@
+/var/spool/slurm/slurmd/job53007385/slurm_script: line 15: /gpfs/helios/home/joshua1/miniconda/bin/activate: No such file or directory
+
+CondaError: Run 'conda init' before 'conda activate'
+
+FATAL:   could not open image /gpfs/helios/home/joshua1/code/ut-ml-t18-lidar/selfsupervised_flow/slim_singularity.def: image format not recognized

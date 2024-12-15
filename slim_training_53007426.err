@@ -1,0 +1,8 @@
+Error for command "login": accepts between 0 and 1 arg(s), received 3
+
+Usage:
+  singularity [global options...] remote [remote options...] login [login options...] <remote_name|registry_uri>
+
+Run 'singularity --help' for more detailed usage information.
+FATAL:   Unable to submit build job: no authentication token, log in with `singularity remote login`
+FATAL:   could not open image /gpfs/helios/home/joshua1/code/ut-ml-t18-lidar/selfsupervised_flow/slim.sif: failed to retrieve path for /gpfs/helios/home/joshua1/code/ut-ml-t18-lidar/selfsupervised_flow/slim.sif: lstat /gpfs/helios/home/joshua1/code/ut-ml-t18-lidar/selfsupervised_flow/slim.sif: no such file or directory

@@ -1,0 +1,2 @@
+FATAL:   could not use fakeroot: no mapping entry found in /etc/subuid for joshua1
+FATAL:   could not open image /gpfs/helios/home/joshua1/code/ut-ml-t18-lidar/selfsupervised_flow/slim.sif: failed to retrieve path for /gpfs/helios/home/joshua1/code/ut-ml-t18-lidar/selfsupervised_flow/slim.sif: lstat /gpfs/helios/home/joshua1/code/ut-ml-t18-lidar/selfsupervised_flow/slim.sif: no such file or directory
